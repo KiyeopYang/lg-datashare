@@ -14,7 +14,15 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Button, Container, Divider, Form, Message, Header, Segment } from 'semantic-ui-react';
+import {
+  Button,
+  Container,
+  Divider,
+  Form,
+  Message,
+  Header,
+  Segment,
+} from 'semantic-ui-react';
 import { Redirect, Link } from 'react-router-dom';
 
 import {
@@ -27,6 +35,7 @@ import SocialLogins from './SocialLogins';
 const styles = {
   container: {
     marginTop: '7em',
+    width: 400,
   },
 };
 
@@ -68,25 +77,17 @@ export class Login extends Component {
     const { error, loading, username, password, loggedIn, notice } = this.props;
 
     if (loggedIn) {
-      const { from } = this.props.location.state || { from: { pathname: '/app' } };
-      return (
-        <Redirect to={from} />
-      );
+      const { from } = this.props.location.state || {
+        from: { pathname: '/app' },
+      };
+      return <Redirect to={from} />;
     }
 
     return (
       <Container style={styles.container}>
         <Header as="h1">Login</Header>
-        <Message
-          info
-          header={notice}
-          hidden={notice === ''}
-        />
-        <Message
-          warning
-          header={error}
-          hidden={error === ''}
-        />
+        <Message info header={notice} hidden={notice === ''} />
+        <Message warning header={error} hidden={error === ''} />
         <Form loading={loading}>
           <Form.Field>
             <Form.Input
@@ -108,10 +109,21 @@ export class Login extends Component {
             />
           </Form.Field>
           <Segment padded>
-            <Button color="teal" fluid type="submit" onClick={this.handleSubmit}>Login</Button>
+            <Button
+              color="teal"
+              fluid
+              type="submit"
+              onClick={this.handleSubmit}
+            >
+              Login
+            </Button>
             <Divider horizontal>Or</Divider>
-            <Link to="/register"><Button secondary fluid>Sign Up Now</Button></Link>
-            <SocialLogins showFacebook showGoogle />
+            <Link to="/register">
+              <Button secondary fluid>
+                Sign Up Now
+              </Button>
+            </Link>
+            <SocialLogins showFacebook={false} showGoogle={false} />
           </Segment>
         </Form>
       </Container>
@@ -139,11 +151,8 @@ const mapStateToProps = ({ auth }) => {
   return { username, password, error, loading, loggedIn, notice };
 };
 
-export default connect(
-  mapStateToProps,
-  {
-    authFormUpdate,
-    loginUser,
-    loggedInStatusChanged,
-  },
-)(Login);
+export default connect(mapStateToProps, {
+  authFormUpdate,
+  loginUser,
+  loggedInStatusChanged,
+})(Login);

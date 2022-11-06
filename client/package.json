@@ -11,6 +11,7 @@
     "amazon-cognito-identity-js": "^1.20.0",
     "aws-iot-device-sdk": "^2.2.6",
     "aws-sdk": ">=2.814.0",
+    "axios": "^1.1.3",
     "browserslist": ">=4.16.5",
     "crypto-js": "^3.1.9-1",
     "glob-parent": ">=6.0.1",
@@ -38,7 +39,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "predeploy": "npm run build",
-    "deploy": "aws s3 cp build s3://{see docs/mobile_hub_deployment.md} --recursive",
+    "deploy": "aws s3 cp build s3://tosky-lg-datashare --recursive",
     "test": "react-scripts test --env=jsdom --setupFiles ./src/config/test/setupTests.js",
     "coverage": "npm test -- --coverage",
     "eject": "react-scripts eject"

@@ -52,17 +52,13 @@ const signOutUserSuccess = (dispatch, getState) => {
  * 1. Sign out user from Cognito
  * 2. Clear any cached identity data
  */
-export const handleSignOut = () => (
-  (dispatch, getState) => (
-    Cognito.logoutUser()
-      .then(() => {
-        Cognito.clearCachedId();
-        sessionStorage.clear();
-        localStorage.clear();
-        signOutUserSuccess(dispatch, getState);
-      })
-  )
-);
+export const handleSignOut = () => (dispatch, getState) =>
+  Cognito.logoutUser().then(() => {
+    Cognito.clearCachedId();
+    sessionStorage.clear();
+    localStorage.clear();
+    signOutUserSuccess(dispatch, getState);
+  });
 
 /**
  * After successful login:
@@ -88,11 +84,10 @@ const loginUserSuccess = (dispatch, user, awsCredentials, provider, token) => {
   dispatch({ type: LOGIN_USER_SUCCESS, user });
   dispatch({ type: LOGGED_IN_STATUS_CHANGED, loggedIn: true });
   const identityId = Cognito.getIdentityId();
-  ApiGateway.createUser(user.username)
-    .then((createdUser) => {
-      log.debug('created user', createdUser);
-      dispatch({ type: NEW_USER, identityId, user: createdUser });
-    });
+  ApiGateway.createUser(user.username).then((createdUser) => {
+    log.debug('created user', createdUser);
+    dispatch({ type: NEW_USER, identityId, user: createdUser });
+  });
 };
 
 const loginUserFail = (dispatch, error) => {
@@ -108,43 +103,50 @@ const clearCognitoLocalStorage = () => {
   let len = localStorage.length;
   for (let i = 0; i < len; i += 1, len = localStorage.length) {
     const key = localStorage.key(i);
-    if (key.includes('CognitoIdentityServiceProvider') || key.includes('aws.cognito.identity')) {
+    if (
+      key.includes('CognitoIdentityServiceProvider') ||
+      key.includes('aws.cognito.identity')
+    ) {
       log.debug('Cleared key from localStorage', key);
       localStorage.removeItem(key);
     }
   }
 };
 
-export const loginUser = (username, password) => (
-  (dispatch) => {
-    dispatch({ type: LOGIN_USER });
-    clearCognitoLocalStorage();
-    return Cognito.loginUser(username, password)
-      .then(userData => loginUserSuccess(dispatch, userData.userObj, userData.awsCredentials, 'user_pool', ''))
-      .catch((error) => {
-        log.error(error);
-        loginUserFail(dispatch, error.message);
-      });
-  }
-);
+export const loginUser = (username, password) => (dispatch) => {
+  dispatch({ type: LOGIN_USER });
+  clearCognitoLocalStorage();
+  return Cognito.loginUser(username, password)
+    .then((userData) =>
+      loginUserSuccess(
+        dispatch,
+        userData.userObj,
+        userData.awsCredentials,
+        'user_pool',
+        ''
+      )
+    )
+    .catch((error) => {
+      log.error(error);
+      loginUserFail(dispatch, error.message);
+    });
+};
 
-export const loginUserProvider = (provider, profile, token) => (
-  (dispatch) => {
-    dispatch({ type: LOGIN_USER });
-    return Cognito.getAwsCredentials(token, provider)
-      .then((awsCredentials) => {
-        // Add a username: key set as the identity's email
-        const userObj = Object.assign({ username: profile.email }, profile);
-        loginUserSuccess(dispatch, userObj, awsCredentials, provider, token);
-      })
-      .catch((error) => {
-        log.error(error);
-        loginUserFail(dispatch, error.message);
-      });
-  }
-);
+export const loginUserProvider = (provider, profile, token) => (dispatch) => {
+  dispatch({ type: LOGIN_USER });
+  return Cognito.getAwsCredentials(token, provider)
+    .then((awsCredentials) => {
+      // Add a username: key set as the identity's email
+      const userObj = Object.assign({ username: profile.email }, profile);
+      loginUserSuccess(dispatch, userObj, awsCredentials, provider, token);
+    })
+    .catch((error) => {
+      log.error(error);
+      loginUserFail(dispatch, error.message);
+    });
+};
 
-export const loggedInStatusChanged = loggedIn => ({
+export const loggedInStatusChanged = (loggedIn) => ({
   type: LOGGED_IN_STATUS_CHANGED,
   loggedIn,
 });
@@ -164,11 +166,11 @@ const registerUserFail = (dispatch, error) => {
   dispatch({ type: REGISTER_USER_FAILED, error });
 };
 
-export const register = (username, password, email) => (
-  (dispatch) => {
-    dispatch({ type: REGISTER_USER });
-    return Cognito.register(username, password, email)
-      .then(registeredUsername => registerUserSuccess(dispatch, registeredUsername))
-      .catch(error => registerUserFail(dispatch, error.message));
-  }
-);
+export const register = (username, password, email) => (dispatch) => {
+  dispatch({ type: REGISTER_USER });
+  return Cognito.register(username, password, email)
+    .then((registeredUsername) =>
+      registerUserSuccess(dispatch, registeredUsername)
+    )
+    .catch((error) => registerUserFail(dispatch, error.message));
+};

@@ -1,0 +1,12 @@
+{
+  "AwsApiGatewayInvokeUrl": "https://4wu9a82nya.execute-api.ap-northeast-2.amazonaws.com/prod",
+  "UserPoolId": "ap-northeast-2_KGHOMCSku",
+  "UserPoolClientId": "d5195taiacrscesnseasa2ur3",
+  "IdentityPoolId": "ap-northeast-2:1dae1580-1ff6-460c-bb9c-14bdb9569517",
+  "AwsIotHost": "a1ketjp7zswwbs-ats.iot.ap-northeast-2.amazonaws.com",
+  "AwsRegion": "ap-northeast-2",
+  "LogLevel": "silent",
+  "MqttDebugLevel": "false",
+  "FacebookAppId": "not_configured",
+  "GoogleAppId": "not_configured"
+}

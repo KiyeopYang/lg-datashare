@@ -3,3 +3,22 @@ body {
   padding: 0;
   font-family: sans-serif;
 }
+
+.custom-presence-indicator {
+  position: absolute;
+  bottom: 0;
+  left: 10;
+  /* size the indicator appropriately. content should not appear outside the indicator. */
+  width: 16px;
+  height: 16px;
+  overflow: hidden;
+  /* style the indicator. */
+  color: #00875a;
+  border: 3px solid #fff;
+  border-radius: 100%;
+  fill: #00875a;
+}
+
+.modal {
+  display: flex !important;
+}

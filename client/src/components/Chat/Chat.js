@@ -13,15 +13,17 @@
 
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Grid, Header } from 'semantic-ui-react';
+import { Grid, Header, Tab, Button, Icon } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
+import UserList from '../UserList';
 
 import RoomMenu from './RoomMenu';
 import Reply from './Reply';
 import MessageHistory from './MessageHistory';
 import { readChat, subscribeToTopic } from '../../actions/chatActions';
 import { topicFromParams } from '../../lib/topicHelper';
+import UserModal from '../Modal';
 
 /**
  * Container component containing message history and reply section
@@ -29,6 +31,10 @@ import { topicFromParams } from '../../lib/topicHelper';
 export class Chat extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      userModalOpen: false,
+      userModalProps: {},
+    };
     this.scrollToBottomOfMessages = this.scrollToBottomOfMessages.bind(this);
   }
 
@@ -55,12 +61,61 @@ export class Chat extends Component {
     const { params } = this.props.match;
     return (
       <div>
-        <Header as="h1">IoT Chat Application</Header>
+        <div style={{ display: 'flex', alignItems: 'end', marginBottom: 12 }}>
+          <Button
+            icon
+            style={{ marginRight: 8 }}
+            onClick={() => {
+              window.history.back();
+            }}
+          >
+            <Icon name="left arrow" />
+          </Button>
+          <Header as="h1" style={{ marginTop: 0 }}>
+            Chat Application
+          </Header>
+        </div>
         <Grid stackable columns={2}>
           <Grid.Column>
             <RoomMenu />
-          </Grid.Column>
 
+            <Tab
+              style={{ width: 290 }}
+              panes={[
+                {
+                  menuItem: {
+                    key: 'participants',
+                    icon: 'users',
+                    content: 'Participants(2)',
+                  },
+                  render: () => (
+                    <Tab.Pane>
+                      <UserList
+                        onClick={(item) => {
+                          this.setState({
+                            userModalOpen: true,
+                            userModalProps: {
+                              userId: item.id,
+                            },
+                          });
+                        }}
+                        items={[
+                          {
+                            id: '1',
+                            name: 'Lena',
+                          },
+                          {
+                            id: '2',
+                            name: 'Lindsay',
+                          },
+                        ]}
+                      />
+                    </Tab.Pane>
+                  ),
+                },
+              ]}
+            />
+          </Grid.Column>
           <Grid.Column>
             <div
               messages={this.props.messages}
@@ -77,6 +132,21 @@ export class Chat extends Component {
             </div>
           </Grid.Column>
         </Grid>
+
+        <UserModal
+          open={this.state.userModalOpen}
+          onClose={() => {
+            this.setState({
+              userModalOpen: false,
+            });
+          }}
+          onOpen={() => {
+            this.setState({
+              userModalOpen: true,
+            });
+          }}
+          userId={this.state.userModalProps.userId}
+        />
       </div>
     );
   }

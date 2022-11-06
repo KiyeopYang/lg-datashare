@@ -26,17 +26,10 @@ import RoomCardExtra from './RoomCardExtra';
 export const RoomCard = ({ chat, unreadCount, subscribed }) => (
   <Card as={Link} to={`/app/${chat.name}`}>
     <Card.Content>
-      <Card.Header>
-        { formatRoomCardHeader(chat.name) }
-      </Card.Header>
-      <Card.Meta>
-        { chat.type }
-      </Card.Meta>
+      <Card.Header>{formatRoomCardHeader(chat.name)}</Card.Header>
+      <Card.Meta>{chat.type}</Card.Meta>
     </Card.Content>
-    <RoomCardExtra
-      unreadCount={unreadCount}
-      subscribed={subscribed}
-    />
+    <RoomCardExtra unreadCount={unreadCount} subscribed={subscribed} />
   </Card>
 );
 

@@ -33,14 +33,12 @@ export class Rooms extends Component {
     return (
       <div>
         <Header as="h1">Rooms List</Header>
-        <Message
-          warning
-          header={error}
-          hidden={error === ''}
-        />
+        <Message warning header={error} hidden={error === ''} />
         <Card.Group>
           <CreateRoom />
-          {chats.map(chat => (<RoomCard key={chat.name} chat={chat} />))}
+          {chats.map((chat) => (
+            <RoomCard key={chat.name} chat={chat} />
+          ))}
         </Card.Group>
       </div>
     );
@@ -48,14 +46,16 @@ export class Rooms extends Component {
 }
 
 Rooms.propTypes = {
-  chats: PropTypes.arrayOf(PropTypes.shape({
-    name: PropTypes.string.isRequired,
-  })).isRequired,
+  chats: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+    })
+  ).isRequired,
   fetchAllChats: PropTypes.func.isRequired,
   error: PropTypes.string.isRequired,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   chats: state.chat.allChats,
   error: state.chat.error,
 });

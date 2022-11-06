@@ -14,12 +14,22 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Link, Switch, Route } from 'react-router-dom';
-import { Container, Menu, Tab, Label } from 'semantic-ui-react';
+import {
+  Container,
+  Menu,
+  Tab,
+  Label,
+  Button,
+  Image,
+  List,
+} from 'semantic-ui-react';
 import { connect } from 'react-redux';
 
+import Modal from './Modal';
 import Chat from './Chat/Chat';
 import Rooms from './Rooms/Rooms';
 import Spinner from './Spinner';
+import UserList from './UserList';
 import { handleSignOut, loggedInStatusChanged } from '../actions/authActions';
 import * as IoT from '../lib/aws-iot';
 import {
@@ -35,7 +45,10 @@ const styles = {
     display: 'flex',
   },
   tab: {
-    width: 300,
+    width: 260,
+    height: '100vh',
+    borderRight: '1px solid #dfdfdf',
+    paddingRight: 40,
   },
   room: {
     width: 700,
@@ -50,6 +63,8 @@ export class App extends Component {
     super(props);
     this.state = {
       enterApp: false,
+      modalOpen: false,
+      modalProps: {},
     };
     this.signOut = this.signOut.bind(this);
   }
@@ -109,42 +124,143 @@ export class App extends Component {
     // If we have acquired the necessary policies, render desired page
     if (this.state.enterApp) {
       return (
-        <Container style={styles.container}>
-          <Container style={styles.tab}>
-            <Tab
-              style={{ marginBottom: 24 }}
-              panes={[
-                {
-                  menuItem: {
-                    key: 'contacts',
-                    icon: 'users',
-                    content: 'Contacts(0)',
+        <>
+          <Container style={styles.container}>
+            <Container style={styles.tab}>
+              <Tab
+                style={{ marginBottom: 24 }}
+                panes={[
+                  {
+                    menuItem: {
+                      key: 'contacts',
+                      icon: 'call',
+                      content: 'Contacts(4)',
+                    },
+                    render: () => (
+                      <Tab.Pane>
+                        <UserList
+                          onClick={(item) => {
+                            this.setState({
+                              modalOpen: true,
+                              modalProps: {
+                                title: 'Contacts',
+                                subTitle: item.name,
+                                description: '',
+                                button1:
+                                  item.description === 'Requested'
+                                    ? {
+                                        content: 'Reject',
+                                        negative: true,
+                                        onClick: () => {
+                                          alert('Reject');
+                                        },
+                                      }
+                                    : item.description === 'Pending'
+                                    ? {
+                                        content: 'Cancel',
+                                        negative: true,
+                                        onClick: () => {
+                                          alert('Cancel');
+                                        },
+                                      }
+                                    : null,
+                                button2:
+                                  item.description === 'Requested'
+                                    ? {
+                                        content: 'Accept',
+                                        positive: true,
+                                        onClick: () => {
+                                          alert('Accept');
+                                        },
+                                      }
+                                    : null,
+                              },
+                            });
+                          }}
+                          items={[
+                            {
+                              id: '1',
+                              name: 'Lena',
+                            },
+                            {
+                              id: '2',
+                              name: 'Lindsay',
+                            },
+                            {
+                              id: '3',
+                              name: 'Mark',
+                              description: 'Requested',
+                            },
+                            {
+                              id: '4',
+                              name: 'Linsy',
+                              description: 'Pending',
+                            },
+                          ]}
+                        />
+                      </Tab.Pane>
+                    ),
                   },
-                  render: () => <Tab.Pane>Contacts</Tab.Pane>,
-                },
-              ]}
-            />
-            <Tab
-              panes={[
-                {
-                  menuItem: {
-                    key: 'invites',
-                    icon: 'talk',
-                    content: 'Invites(0)',
+                ]}
+              />
+              <Tab
+                panes={[
+                  {
+                    menuItem: {
+                      key: 'invites',
+                      icon: 'talk',
+                      content: 'Invites(1)',
+                    },
+                    render: () => (
+                      <Tab.Pane>
+                        <UserList
+                          onClick={(item) => {
+                            this.setState({
+                              modalOpen: true,
+                              modalProps: {
+                                title: 'Invites',
+                                subTitle: `${item.name} invites you`,
+                                description: item.description,
+                                button1: {
+                                  content: 'Reject',
+                                  negative: true,
+                                  onClick: () => {
+                                    alert('Reject');
+                                  },
+                                },
+                                button2: {
+                                  content: 'Accept',
+                                  positive: true,
+                                  onClick: () => {
+                                    alert('Accept');
+                                  },
+                                },
+                              },
+                            });
+                          }}
+                          items={[
+                            {
+                              id: '1',
+                              name: 'Friend A',
+                              description: 'Room No.1',
+                            },
+                          ]}
+                        />
+                      </Tab.Pane>
+                    ),
                   },
-                  render: () => <Tab.Pane>Invites</Tab.Pane>,
-                },
-              ]}
-            />
+                ]}
+              />
+            </Container>
+            <Container style={styles.room}>
+              <Switch>
+                <Route path="/app/room/:roomType/:roomName" component={Chat} />
+                <Route exact path="/app/rooms" component={Rooms} />
+                <Route path="/" component={Rooms} />
+              </Switch>
+            </Container>
           </Container>
-          <Container style={styles.room}>
-            <Switch>
-              <Route path="/app/room/:roomType/:roomName" component={Chat} />
-              <Route exact path="/app/rooms" component={Rooms} />
-              <Route path="/" component={Rooms} />
-            </Switch>
-          </Container>
-        </Container>
+        </>
       );
     }
 
@@ -158,16 +274,35 @@ export class App extends Component {
       return <RootRouter />;
     }
 
+    console.log(this.state.modalProps);
+
     return (
-      <div>
-        <Menu fixed="top">
-          <Menu.Item>
-            <Link to="/app/rooms">Rooms</Link>
-          </Menu.Item>
-          <Menu.Item onClick={this.signOut}>Log out</Menu.Item>
-        </Menu>
-        <div>{this.renderPageBody()}</div>
-      </div>
+      <>
+        <div>
+          <Menu fixed="top">
+            <Menu.Item>
+              <Link to="/app/rooms">Rooms</Link>
+            </Menu.Item>
+            <Menu.Item onClick={this.signOut}>Log out</Menu.Item>
+          </Menu>
+          <div>{this.renderPageBody()}</div>
+        </div>
+
+        <Modal
+          open={this.state.modalOpen}
+          onClose={() => {
+            this.setState({
+              modalOpen: false,
+            });
+          }}
+          onOpen={() => {
+            this.setState({
+              modalOpen: true,
+            });
+          }}
+          {...this.state.modalProps}
+        />
+      </>
     );
   }
 }

@@ -30,6 +30,7 @@ export const RoomMenuItem = (props) => {
       active={active}
       key={topic}
       as={Link}
+      replace
       to={`/app/${topic}`}
     >
       <Label color={active ? 'teal' : 'grey'}>{unreadCount}</Label>
@@ -47,6 +48,5 @@ RoomMenuItem.propTypes = {
 const mapStateToProps = (state, ownProps) => ({
   unreadCount: state.unreads[ownProps.topic] || 0,
 });
-
 
 export default withRouter(connect(mapStateToProps)(RoomMenuItem));

@@ -27,7 +27,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import './semantic.readable.min.css';
+import 'semantic-ui-css/semantic.min.css';
 import * as log from 'loglevel';
 
 import './index.css';

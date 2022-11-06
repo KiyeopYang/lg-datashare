@@ -14,7 +14,17 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Button, List, Message, Divider, Segment, Container, Form, Header, Popup } from 'semantic-ui-react';
+import {
+  Button,
+  List,
+  Message,
+  Divider,
+  Segment,
+  Container,
+  Form,
+  Header,
+  Popup,
+} from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 
 import { register, authFormUpdate } from '../../actions/authActions';
@@ -22,6 +32,7 @@ import { register, authFormUpdate } from '../../actions/authActions';
 const styles = {
   container: {
     marginTop: '7em',
+    width: 400,
   },
 };
 
@@ -46,28 +57,13 @@ export class Register extends Component {
   }
 
   render() {
-    const {
-      username,
-      password,
-      email,
-      error,
-      notice,
-      loading,
-    } = this.props;
+    const { username, password, email, error, notice, loading } = this.props;
 
     return (
       <Container style={styles.container}>
         <Header as="h1">Register</Header>
-        <Message
-          info
-          header={notice}
-          hidden={notice === ''}
-        />
-        <Message
-          warning
-          header={error}
-          hidden={error === ''}
-        />
+        <Message info header={notice} hidden={notice === ''} />
+        <Message warning header={error} hidden={error === ''} />
         <Form loading={loading}>
           <Form.Field>
             <Form.Input
@@ -96,9 +92,15 @@ export class Register extends Component {
           >
             <List bulleted>
               <List.Item>Password must have at least 1 number</List.Item>
-              <List.Item>Password must have at least 1 special character</List.Item>
-              <List.Item>Password must have at least 1 uppercase letter</List.Item>
-              <List.Item>Password must have at least 1 lowercase letter</List.Item>
+              <List.Item>
+                Password must have at least 1 special character
+              </List.Item>
+              <List.Item>
+                Password must have at least 1 uppercase letter
+              </List.Item>
+              <List.Item>
+                Password must have at least 1 lowercase letter
+              </List.Item>
             </List>
           </Popup>
           <Form.Field>
@@ -112,9 +114,20 @@ export class Register extends Component {
             />
           </Form.Field>
           <Segment padded>
-            <Button color="teal" fluid type="submit" onClick={this.handleSubmit}>Register</Button>
+            <Button
+              color="teal"
+              fluid
+              type="submit"
+              onClick={this.handleSubmit}
+            >
+              Register
+            </Button>
             <Divider horizontal>Or</Divider>
-            <Link to="/login"><Button secondary fluid>Login</Button></Link>
+            <Link to="/login">
+              <Button secondary fluid>
+                Login
+              </Button>
+            </Link>
           </Segment>
         </Form>
       </Container>
@@ -134,14 +147,7 @@ Register.propTypes = {
 };
 
 const mapStateToProps = ({ auth }) => {
-  const {
-    username,
-    password,
-    email,
-    error,
-    notice,
-    loading,
-  } = auth;
+  const { username, password, email, error, notice, loading } = auth;
   return {
     username,
     password,

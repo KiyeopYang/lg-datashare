@@ -50,7 +50,7 @@ export default class IoTClient {
    * @params {Object} options - Options to pass to DeviceSdk
    */
   initClient(options) {
-    const clientId = `chat-user-${Math.floor((Math.random() * 1000000) + 1)}`;
+    const clientId = `chat-user-${Math.floor(Math.random() * 1000000 + 1)}`;
 
     this.client = DeviceSdk.device({
       region: options.region || Config.awsRegion,
@@ -71,7 +71,7 @@ export default class IoTClient {
       maximumReconnectTimeMs: options.maximumReconnectTimeMs || 500,
 
       // Enable console debugging information
-      debug: (typeof options.debug === 'undefined') ? true : options.debug,
+      debug: typeof options.debug === 'undefined' ? true : options.debug,
 
       // AWS access key ID, secret key and session token must be
       // initialized with empty strings
@@ -80,7 +80,8 @@ export default class IoTClient {
       sessionToken: options.sessionToken || '',
 
       // Let redux handle subscriptions
-      autoResubscribe: (typeof options.debug === 'undefined') ? false : options.autoResubscribe,
+      autoResubscribe:
+        typeof options.debug === 'undefined' ? false : options.autoResubscribe,
     });
   }
 
@@ -120,7 +121,11 @@ export default class IoTClient {
    * @param {string} sessionToken - Session Token
    */
   updateWebSocketCredentials(accessKeyId, secretAccessKey, sessionToken) {
-    this.client.updateWebSocketCredentials(accessKeyId, secretAccessKey, sessionToken);
+    this.client.updateWebSocketCredentials(
+      accessKeyId,
+      secretAccessKey,
+      sessionToken
+    );
   }
 
   /**
@@ -173,6 +178,7 @@ export default class IoTClient {
    * @param {string} message - JSON encoded payload to send
    */
   publish(topic, message) {
+    console.log({ topic, message });
     this.client.publish(topic, message);
   }
 

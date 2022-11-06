@@ -55,7 +55,7 @@ export class Chat extends Component {
     const { params } = this.props.match;
     return (
       <div>
-        <Header as="h1">AWS IoT Chat Application</Header>
+        <Header as="h1">IoT Chat Application</Header>
         <Grid stackable columns={2}>
           <Grid.Column>
             <RoomMenu />
@@ -64,9 +64,13 @@ export class Chat extends Component {
           <Grid.Column>
             <div
               messages={this.props.messages}
-              ref={(el) => { this.scrollDiv = el; }}
+              ref={(el) => {
+                this.scrollDiv = el;
+              }}
             >
-              <p>Welcome to {params.roomType}/{params.roomName}</p>
+              <p>
+                Welcome to {params.roomType}/{params.roomName}
+              </p>
 
               <MessageHistory />
               <Reply />
@@ -103,4 +107,6 @@ export const mapStateToProps = (state, ownProps) => {
   };
 };
 
-export default withRouter(connect(mapStateToProps, { subscribeToTopic, readChat })(Chat));
+export default withRouter(
+  connect(mapStateToProps, { subscribeToTopic, readChat })(Chat)
+);

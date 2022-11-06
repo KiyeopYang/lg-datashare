@@ -14,7 +14,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Link, Switch, Route } from 'react-router-dom';
-import { Container, Menu } from 'semantic-ui-react';
+import { Container, Menu, Tab, Label } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 
 import Chat from './Chat/Chat';
@@ -22,12 +22,23 @@ import Rooms from './Rooms/Rooms';
 import Spinner from './Spinner';
 import { handleSignOut, loggedInStatusChanged } from '../actions/authActions';
 import * as IoT from '../lib/aws-iot';
-import { acquirePublicPolicies, deviceConnectedStatusChanged, attachMessageHandler } from '../actions/iotActions';
+import {
+  acquirePublicPolicies,
+  deviceConnectedStatusChanged,
+  attachMessageHandler,
+} from '../actions/iotActions';
 import RootRouter from './Routers/RootRouter';
 
 const styles = {
   container: {
     marginTop: '7em',
+    display: 'flex',
+  },
+  tab: {
+    width: 300,
+  },
+  room: {
+    width: 700,
   },
 };
 
@@ -63,11 +74,13 @@ export class App extends Component {
       identityId,
     } = nextProps;
 
-    if (connectPolicy &&
+    if (
+      connectPolicy &&
       publicPublishPolicy &&
       publicSubscribePolicy &&
       publicReceivePolicy &&
-      deviceConnected) {
+      deviceConnected
+    ) {
       // Ping to test connection
       const topic = `room/public/ping/${identityId}`;
       IoT.publish(topic, JSON.stringify({ message: 'connected' }));
@@ -97,39 +110,63 @@ export class App extends Component {
     if (this.state.enterApp) {
       return (
         <Container style={styles.container}>
-          <Switch>
-            <Route path="/app/room/:roomType/:roomName" component={Chat} />
-            <Route exact path="/app/rooms" component={Rooms} />
-            <Route path="/" component={Rooms} />
-          </Switch>
+          <Container style={styles.tab}>
+            <Tab
+              style={{ marginBottom: 24 }}
+              panes={[
+                {
+                  menuItem: {
+                    key: 'contacts',
+                    icon: 'users',
+                    content: 'Contacts(0)',
+                  },
+                  render: () => <Tab.Pane>Contacts</Tab.Pane>,
+                },
+              ]}
+            />
+            <Tab
+              panes={[
+                {
+                  menuItem: {
+                    key: 'invites',
+                    icon: 'talk',
+                    content: 'Invites(0)',
+                  },
+                  render: () => <Tab.Pane>Invites</Tab.Pane>,
+                },
+              ]}
+            />
+          </Container>
+          <Container style={styles.room}>
+            <Switch>
+              <Route path="/app/room/:roomType/:roomName" component={Chat} />
+              <Route exact path="/app/rooms" component={Rooms} />
+              <Route path="/" component={Rooms} />
+            </Switch>
+          </Container>
         </Container>
       );
     }
 
     // Otherwise display a loading spinner until API calls have succeeded
-    return (
-      <Route
-        path="/"
-        component={Spinner}
-      />
-    );
+    return <Route path="/" component={Spinner} />;
   }
 
   render() {
     const { loggedIn } = this.props;
     if (!loggedIn) {
-      return (<RootRouter />);
+      return <RootRouter />;
     }
 
     return (
       <div>
-        <Menu
-          fixed="top"
-        >
-          <Menu.Item><Link to="/app/rooms">Rooms</Link></Menu.Item>
+        <Menu fixed="top">
+          <Menu.Item>
+            <Link to="/app/rooms">Rooms</Link>
+          </Menu.Item>
           <Menu.Item onClick={this.signOut}>Log out</Menu.Item>
         </Menu>
-        { this.renderPageBody() }
+        <div>{this.renderPageBody()}</div>
       </div>
     );
   }
@@ -150,7 +187,7 @@ App.propTypes = {
   attachMessageHandler: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = (state => ({
+const mapStateToProps = (state) => ({
   loggedIn: state.auth.loggedIn,
   connectPolicy: state.iot.connectPolicy,
   publicPublishPolicy: state.iot.publicPublishPolicy,
@@ -158,7 +195,7 @@ const mapStateToProps = (state => ({
   publicReceivePolicy: state.iot.publicReceivePolicy,
   deviceConnected: state.iot.deviceConnected,
   identityId: state.auth.identityId,
-}));
+});
 
 const mapDispatchToProps = {
   handleSignOut,
